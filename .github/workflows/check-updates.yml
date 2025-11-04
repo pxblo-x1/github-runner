@@ -64,11 +64,19 @@ jobs:
             sudo /tmp/icr config set telegram.enabled true
           fi
           
+          # Configurar GHCR token si está disponible
+          if [ -n "${GITHUB_TOKEN}" ]; then
+            echo "🔑 Configurando GitHub token para GHCR..."
+            sudo /tmp/icr config set registry.ghcr.enabled true
+            sudo /tmp/icr config set registry.ghcr.token "${GITHUB_TOKEN}"
+          fi
+          
           echo "🔍 Iniciando scan..."
           if [ -n "${TELEGRAM_BOT_TOKEN}" ]; then
-            sudo /tmp/icr scan --docker-daemon --notify --output json --output-file /tmp/scan-results.json
+            # Pasar GITHUB_TOKEN explícitamente a sudo
+            sudo GITHUB_TOKEN="${GITHUB_TOKEN}" /tmp/icr scan --docker-daemon --notify --output json --output-file /tmp/scan-results.json
           else
-            sudo /tmp/icr scan --docker-daemon --output json --output-file /tmp/scan-results.json
+            sudo GITHUB_TOKEN="${GITHUB_TOKEN}" /tmp/icr scan --docker-daemon --output json --output-file /tmp/scan-results.json
           fi
           
           # Copiar con sudo y luego cambiar permisos
@@ -76,7 +84,7 @@ jobs:
           sudo chown runner:runner ./scan-results.json
           chmod 644 ./scan-results.json
           
-          echo "✅ Scan completado - 8 actualizaciones encontradas"
+          echo "✅ Scan completado"
 
       - name: 📊 Show detailed scan summary
         run: |
