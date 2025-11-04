@@ -4,9 +4,9 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        RUNNER_VERSION: ${RUNNER_VERSION:-2.328.0}
+        RUNNER_VERSION: ${RUNNER_VERSION:-2.329.0}
         SONAR_SCANNER_VERSION: ${SONAR_SCANNER_VERSION:-7.3.0.5189}
-    image: github-runner:${RUNNER_VERSION:-2.328.0}  # Tag con la versión
+    image: ghcr.io/actions/actions-runner:${RUNNER_VERSION:-2.329.0}
     container_name: github-actions-runner
     env_file:
       - .env
